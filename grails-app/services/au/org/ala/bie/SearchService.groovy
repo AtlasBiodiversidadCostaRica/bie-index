@@ -696,6 +696,10 @@ class SearchService {
         def response = indexService.query(true, "acceptedConceptID:\"${encGuid}\"", [ "idxtype:${IndexDocType.TAXON.name()}"], GET_ALL_SIZE)
         def synonyms = response.results
 
+        // retrieve any PLIC descriptions
+        response = indexService.query(true, "taxonGuid:\"${encGuid}\"", [ "idxtype:${IndexDocType.PLINIANCORESIMPLE.name()}"], GET_ALL_SIZE)
+        def plicDescriptions = response.results        
+
         def classification = extractClassification(taxon)
 
         //retrieve any common names, ordered by priority and then language
@@ -860,7 +864,24 @@ class SearchService {
                             datasetURL: datasetURL,
                             priority: variant.priority
                     ]
-                }
+                },
+                plicDescriptions: plicDescriptions.collect { plicDescription ->
+                    def datasetURL = getDataset(plicDescription.datasetID, datasetMap)?.guid
+                    def datasetName = getDataset(plicDescription.datasetID, datasetMap)?.name
+                    [
+                            language: plicDescription.language,
+                            synonymsUnstructured: plicDescription.synonymsUnstructured,
+                            fullDescriptionUnstructured: plicDescription.fullDescriptionUnstructured,
+                            lifeCycleUnstructured: plicDescription.lifeCycleUnstructured,
+                            reproductionUnstructured: plicDescription.reproductionUnstructured,
+                            feedingUnstructured: plicDescription.feedingUnstructured,
+                            molecularDataUnstructured: plicDescription.molecularDataUnstructured,
+                            habitatUnstructured: plicDescription.habitatUnstructured,
+                            distributionUnstructured: plicDescription.distributionUnstructured,
+                            populationBiologyUnstructured: plicDescription.populationBiologyUnstructured,
+                            usesUnstructured: plicDescription.usesUnstructured
+                    ]
+                }                
 
         ]
         if (taxon.taxonConceptID)
