@@ -23,6 +23,7 @@ import au.org.ala.names.model.ALAParsedName
 import au.org.ala.names.model.RankType
 import au.org.ala.names.model.TaxonomicType
 import au.org.ala.vocab.ALATerm
+import cr.org.crbio.vocab.CRBioTerm
 import grails.config.Config
 import grails.core.support.GrailsConfigurationAware
 import groovy.json.JsonParserType
@@ -1105,6 +1106,7 @@ class ImportService implements GrailsConfigurationAware {
         indexService.deleteFromIndex(IndexDocType.COMMON, false)
         indexService.deleteFromIndex(IndexDocType.IDENTIFIER, false)
         indexService.deleteFromIndex(IndexDocType.TAXONVARIANT, false)
+        indexService.deleteFromIndex(IndexDocType.PLINIANCORESIMPLE, false)
         log("Cleared.")
     }
 
@@ -1156,6 +1158,11 @@ class ImportService implements GrailsConfigurationAware {
             def identifierExtension = archive.getExtension(GbifTerm.Identifier)
             if (identifierExtension)
                 importIdentifierDwcA(identifierExtension, attributionMap, datasetMap, defaultDatasetName)
+            def plinianCoreSimpleExtension = archive.getExtension(CRBioTerm.PlinianCore)
+            if (plinianCoreSimpleExtension) {
+                log("Processing plinianCoreSimpleExtension...")
+                importPlinianCoreSimpleDwcA(plinianCoreSimpleExtension, attributionMap, datasetMap, defaultDatasetName)
+            }                
             log("Import finished.")
         } catch (Exception ex) {
             log("There was problem with the import: " + ex.getMessage())
@@ -1415,6 +1422,188 @@ class ImportService implements GrailsConfigurationAware {
             log("Processed ${count} records")
         }
     }
+
+    def importDescriptionDwcA(ArchiveFile archiveFile, Map attributionMap, Map datasetMap, String defaultDatasetName) throws Exception {
+        // WU, MV 2019-10-17
+
+        if (archiveFile.rowType != GbifTerm.Description)
+            throw new IllegalArgumentException("Description import only works for files of type " + GbifTerm.Description + " got " + archiveFile.rowType)
+        log("Importing taxa descriptions")
+        def buffer = []
+        def count = 0
+        for (Record record: archiveFile) {
+            log("record: " + record)
+            log("record.terms(): " + record.terms())
+            String taxonID = record.id()
+            String datasetID = record.value(DwcTerm.datasetID)
+            String descriptionType = record.value(DcTerm.type)
+
+            log("DcTerm.description: " + DcTerm.description)
+            log("record.value(DcTerm.description): " + record.value(DcTerm.description))
+            String descriptionDescription = record.value(DcTerm.description)
+            log("descriptionDescription: " + descriptionDescription)
+
+            String descriptionSource = record.value(DcTerm.source)
+            String descriptionRights = record.value(DcTerm.rights)
+            String descriptionLicense = record.value(DcTerm.license)
+
+            def doc = [:]
+            doc["id"] = UUID.randomUUID().toString() // doc key
+            doc["idxtype"] = IndexDocType.DESCRIPTION.name() // required field
+            doc["guid"] = doc.id
+            doc["taxonGuid"] = taxonID
+            doc["datasetID"] = datasetID
+            doc["descriptionType"] = descriptionType
+            doc["description"] = descriptionDescription
+            doc["source"] = descriptionSource
+            doc["rights"] = descriptionRights
+            doc["license"] = descriptionLicense
+
+            def attribution = findAttribution(datasetID, attributionMap, datasetMap)
+            if (attribution) {
+                doc["datasetName"] = attribution["datasetName"]
+                doc["rightsHolder"] = attribution["rightsHolder"]
+            } else if (defaultDatasetName) {
+                doc["datasetName"] = defaultDatasetName
+            }
+            buffer << doc
+            count++
+            if (buffer.size() >= BUFFER_SIZE) {
+                indexService.indexBatch(buffer)
+                buffer.clear()
+                if (count % REPORT_INTERVAL == 0)
+                    log("Processed ${count} description records")
+            }
+        }
+        if (buffer.size() > 0) {
+            indexService.indexBatch(buffer)
+            log("Processed ${count} description records")
+        }
+    }
+
+    def importPlinianCoreSimpleDwcA(ArchiveFile archiveFile, Map attributionMap, Map datasetMap, String defaultDatasetName) throws Exception {
+        // WU, MV 2019-10-17
+
+        log("rowType: " + archiveFile.rowType)
+        log("CRBioTerm.PlinianCore: " + (CRBioTerm.PlinianCore ?: ""))
+        if (archiveFile.rowType != CRBioTerm.PlinianCore)
+            throw new IllegalArgumentException("PlinianCoreSimple import only works for files of type " + CRBioTerm.PlinianCore + " got " + archiveFile.rowType)
+        log("Importing Plinian Core Simple Records")
+        def buffer = []
+        def count = 0
+        for (Record record: archiveFile) {
+            log("record: " + record)
+            log("record.column(0): " + (record.column(0) ?: "nulo"))
+            log("record.column(1): " + (record.column(1) ?: "nulo"))
+            log("record.column(4): " + (record.column(4) ?: "nulo"))
+            log("record.column(6): " + (record.column(6) ?: "nulo"))
+            log("record.column(9): " + (record.column(9) ?: "nulo"))
+            log("record.column(12): " + (record.column(12) ?: "nulo"))
+            log("record.column(13): " + (record.column(13) ?: "nulo"))
+            log("record.column(21): " + (record.column(21) ?: "nulo"))
+            log("record.column(28): " + (record.column(28) ?: "nulo"))
+            log("record.column(38): " + (record.column(38) ?: "nulo"))
+            log("record.column(39): " + (record.column(39) ?: "nulo"))
+            log("record.column(42): " + (record.column(42) ?: "nulo"))
+            log("record.column(46): " + (record.column(46) ?: "nulo"))
+            log("record.column(25): " + (record.column(25) ?: "nulo"))
+            log("record.column(40): " + (record.column(40) ?: "nulo"))
+            log("record.column(43): " + (record.column(43) ?: "nulo"))
+
+            // log("record.terms(): " + record.terms())
+            String taxonID = record.id()
+            String datasetID = record.value(DwcTerm.datasetID)
+
+
+            String language = record.column(4)
+            log("language: " + (language ?: "nulo"))
+
+            String synonymsUnstructured = record.column(6)
+            log("synonymsUnstructured: " + (synonymsUnstructured ?: "nulo"))
+
+            String fullDescriptionUnstructured = record.column(9)
+            log("fullDescriptionUnstructured: " + (fullDescriptionUnstructured ?: "nulo"))
+
+            String lifeCycleUnstructured = record.column(12)
+            log("lifeCycleUnstructured: " + (lifeCycleUnstructured ?: "nulo"))
+
+            String reproductionUnstructured = record.column(13)
+            log("reproductionUnstructured: " + (reproductionUnstructured ?: "nulo"))
+
+            String feedingUnstructured = record.column(21)
+            log("feedingUnstructured: " + (feedingUnstructured ?: "nulo"))
+
+            String molecularDataUnstructured = record.column(28)
+            log("molecularDataUnstructured: " + (molecularDataUnstructured ?: "nulo"))
+
+            String habitatUnstructured = record.column(38)
+            log("habitatUnstructured: " + (habitatUnstructured ?: "nulo"))
+
+            String distributionUnstructured = record.column(39)
+            log("distributionUnstructured: " + (distributionUnstructured ?: "nulo"))
+
+            String populationBiologyUnstructured = record.column(42)
+            log("populationBiologyUnstructured: " + (populationBiologyUnstructured ?: "nulo"))
+
+            String usesUnstructured = record.column(46)
+            log("usesUnstructured: " + (usesUnstructured ?: "nulo"))
+
+            String behaviorUnstructured = record.column(25)
+            log("behaviorUnstructured: " + (behaviorUnstructured ?: "nulo"))            
+
+            String endemicUnstructured = record.column(40)
+            log("endemicUnstructured: " + (endemicUnstructured ?: "nulo"))            
+
+            String threatStatusUnstructured = record.column(43)
+            log("threatStatusUnstructured: " + (threatStatusUnstructured ?: "nulo"))            
+
+
+
+
+            def doc = [:]
+            doc["id"] = UUID.randomUUID().toString() // doc key
+            doc["idxtype"] = IndexDocType.PLINIANCORESIMPLE.name() // required field
+            doc["guid"] = doc.id
+            doc["taxonGuid"] = taxonID
+            doc["datasetID"] = datasetID
+
+            doc["language"] = language
+            doc["synonymsUnstructured"] = synonymsUnstructured
+            doc["fullDescriptionUnstructured"] = fullDescriptionUnstructured
+            doc["lifeCycleUnstructured"] = lifeCycleUnstructured
+            doc["reproductionUnstructured"] = reproductionUnstructured
+            doc["feedingUnstructured"] = feedingUnstructured
+            doc["molecularDataUnstructured"] = molecularDataUnstructured
+            doc["habitatUnstructured"] = habitatUnstructured
+            doc["distributionUnstructured"] = distributionUnstructured
+            doc["populationBiologyUnstructured"] = populationBiologyUnstructured
+            doc["usesUnstructured"] = usesUnstructured
+            doc["behaviorUnstructured"] = behaviorUnstructured 
+            doc["endemicUnstructured"] = endemicUnstructured            
+            doc["threatStatusUnstructured"] = threatStatusUnstructured               
+
+            def attribution = findAttribution(datasetID, attributionMap, datasetMap)
+            if (attribution) {
+                doc["datasetName"] = attribution["datasetName"]
+                doc["rightsHolder"] = attribution["rightsHolder"]
+            } else if (defaultDatasetName) {
+                doc["datasetName"] = defaultDatasetName
+            }
+            buffer << doc
+            count++
+            if (buffer.size() >= BUFFER_SIZE) {
+                indexService.indexBatch(buffer)
+                buffer.clear()
+                if (count % REPORT_INTERVAL == 0)
+                    log("Processed ${count} Plinian Core Simple records")
+            }
+        }
+        if (buffer.size() > 0) {
+            indexService.indexBatch(buffer)
+            log("Processed ${count} Plinian Core Simple records")
+        }
+    }
+
 
     def buildTaxonRecord(Record record, Map doc, Map attributionMap, Map datasetMap, Map taxonRanks, String defaultTaxonomicStatus, String defaultDatasetName) {
         def datasetID = record.value(DwcTerm.datasetID)

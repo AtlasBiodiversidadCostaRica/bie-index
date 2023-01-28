@@ -879,7 +879,10 @@ class SearchService {
                             habitatUnstructured: plicDescription.habitatUnstructured,
                             distributionUnstructured: plicDescription.distributionUnstructured,
                             populationBiologyUnstructured: plicDescription.populationBiologyUnstructured,
-                            usesUnstructured: plicDescription.usesUnstructured
+                            usesUnstructured: plicDescription.usesUnstructured,
+                            behaviorUnstructured: plicDescription.behaviorUnstructured,
+                            endemicUnstructured: plicDescription.endemicUnstructured,
+                            threatStatusUnstructured: plicDescription.threatStatusUnstructured                            
                     ]
                 }                
 
