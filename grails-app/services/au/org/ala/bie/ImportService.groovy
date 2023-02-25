@@ -1551,8 +1551,9 @@ class ImportService implements GrailsConfigurationAware {
             String taxonID = record.id()
             String datasetID = record.value(DwcTerm.datasetID)
 
-            String abstract = record.column(3)
-            log("abstract: " + (abstract ?: "null"))
+            // MV 2023-02-25: 'abstract' seems to be problematic as a variable name
+            String abstract_v = record.column(3)
+            log("abstract: " + (abstract_v ?: "null"))
 
             String annualCycleUnstructured = record.column(4)
             log("annualCycleUnstructured: " + (annualCycleUnstructured ?: "null"))
@@ -1699,7 +1700,7 @@ class ImportService implements GrailsConfigurationAware {
             doc["taxonGuid"] = taxonID
             doc["datasetID"] = datasetID
 
-            doc["abstract"] = abstract
+            doc["abstract"] = abstract_v
             doc["annualCycleUnstructured"] = annualCycleUnstructured
             doc["audiencesUnstructured"] = audiencesUnstructured
             doc["behaviorUnstructured"] = behaviorUnstructured
