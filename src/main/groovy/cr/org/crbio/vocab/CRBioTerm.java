@@ -7,6 +7,10 @@ import org.gbif.dwc.terms.TermFactory;
  * @authors William Ulate, Manuel Vargas;
  */
 public enum CRBioTerm implements Term {
+    /** Unique identifier of the record within the database. */
+    TaxonRecordID,
+    /** An Uniform Resource Name (URN) used as an unique identifier of the taxon record. */
+    GlobalUniqueIdentifier,
     /** General description of the taxon. This concept could point out any information about the taxon. Its main goal is summarize the most relevant or attractive characteristics of this taxon to the general public. */
     Abstract,
     /** Set of changes or events that recurrently take place at the same time of year and are influenced by seasonal and inter-annual climate variations. For example: reproduction, flowering, fruiting, emergence of insects, etc. Also called phenology, mainly in plants. In the case of migration, refers only to the timing of it; other data about this are gathered in MigratoryData. In block text format. */
@@ -99,10 +103,6 @@ public enum CRBioTerm implements Term {
     Vector,
     /** An indication of the actual impact as a free text string. */
     WhatImpact,
-    /** Unique identifier of the record within the database. */
-    TaxonRecordID,
-    /** An Uniform Resource Name (URN) used as an unique identifier of the taxon record. */
-    GlobalUniqueIdentifier,
     /** Record type describing Plinian Core Simple taxon descriptions */
     PlinianCore;
 

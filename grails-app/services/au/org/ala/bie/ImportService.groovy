@@ -1425,6 +1425,7 @@ class ImportService implements GrailsConfigurationAware {
 
     def importDescriptionDwcA(ArchiveFile archiveFile, Map attributionMap, Map datasetMap, String defaultDatasetName) throws Exception {
         // WU, MV 2019-10-17
+        // MV 2023-02-24: This function may not be needed anymore.
 
         if (archiveFile.rowType != GbifTerm.Description)
             throw new IllegalArgumentException("Description import only works for files of type " + GbifTerm.Description + " got " + archiveFile.rowType)
@@ -1483,6 +1484,7 @@ class ImportService implements GrailsConfigurationAware {
 
     def importPlinianCoreSimpleDwcA(ArchiveFile archiveFile, Map attributionMap, Map datasetMap, String defaultDatasetName) throws Exception {
         // WU, MV 2019-10-17
+        // MV 2023-02-24: Added remaining PliC elements
 
         log("rowType: " + archiveFile.rowType)
         log("CRBioTerm.PlinianCore: " + (CRBioTerm.PlinianCore ?: ""))
@@ -1492,70 +1494,200 @@ class ImportService implements GrailsConfigurationAware {
         def buffer = []
         def count = 0
         for (Record record: archiveFile) {
+            // MV 2023-02-24: These detailed logs could be removed 
+            // after testing the function
             log("record: " + record)
-            log("record.column(0): " + (record.column(0) ?: "nulo"))
-            log("record.column(1): " + (record.column(1) ?: "nulo"))
-            log("record.column(4): " + (record.column(4) ?: "nulo"))
-            log("record.column(6): " + (record.column(6) ?: "nulo"))
-            log("record.column(9): " + (record.column(9) ?: "nulo"))
-            log("record.column(12): " + (record.column(12) ?: "nulo"))
-            log("record.column(13): " + (record.column(13) ?: "nulo"))
-            log("record.column(21): " + (record.column(21) ?: "nulo"))
-            log("record.column(28): " + (record.column(28) ?: "nulo"))
-            log("record.column(38): " + (record.column(38) ?: "nulo"))
-            log("record.column(39): " + (record.column(39) ?: "nulo"))
-            log("record.column(42): " + (record.column(42) ?: "nulo"))
-            log("record.column(46): " + (record.column(46) ?: "nulo"))
-            log("record.column(25): " + (record.column(25) ?: "nulo"))
-            log("record.column(40): " + (record.column(40) ?: "nulo"))
-            log("record.column(43): " + (record.column(43) ?: "nulo"))
+            log("record.column(0): " + (record.column(0) ?: "null"))
+            log("record.column(1): " + (record.column(1) ?: "null"))
+            log("record.column(2): " + (record.column(2) ?: "null"))
+            log("record.column(3): " + (record.column(3) ?: "null"))
+            log("record.column(4): " + (record.column(4) ?: "null"))
+            log("record.column(5): " + (record.column(5) ?: "null"))
+            log("record.column(6): " + (record.column(6) ?: "null"))
+            log("record.column(7): " + (record.column(7) ?: "null"))
+            log("record.column(8): " + (record.column(8) ?: "null"))
+            log("record.column(9): " + (record.column(9) ?: "null"))
+            log("record.column(10): " + (record.column(10) ?: "null"))
+            log("record.column(11): " + (record.column(11) ?: "null"))
+            log("record.column(12): " + (record.column(12) ?: "null"))
+            log("record.column(13): " + (record.column(13) ?: "null"))
+            log("record.column(14): " + (record.column(14) ?: "null"))
+            log("record.column(15): " + (record.column(15) ?: "null"))
+            log("record.column(16): " + (record.column(16) ?: "null"))
+            log("record.column(17): " + (record.column(17) ?: "null"))
+            log("record.column(18): " + (record.column(18) ?: "null"))
+            log("record.column(19): " + (record.column(19) ?: "null"))
+            log("record.column(20): " + (record.column(20) ?: "null"))
+            log("record.column(21): " + (record.column(21) ?: "null"))
+            log("record.column(22): " + (record.column(22) ?: "null"))
+            log("record.column(23): " + (record.column(23) ?: "null"))
+            log("record.column(24): " + (record.column(24) ?: "null"))
+            log("record.column(25): " + (record.column(25) ?: "null"))
+            log("record.column(26): " + (record.column(26) ?: "null"))
+            log("record.column(27): " + (record.column(27) ?: "null"))
+            log("record.column(28): " + (record.column(28) ?: "null"))
+            log("record.column(29): " + (record.column(29) ?: "null"))
+            log("record.column(30): " + (record.column(30) ?: "null"))
+            log("record.column(31): " + (record.column(31) ?: "null"))
+            log("record.column(32): " + (record.column(32) ?: "null"))
+            log("record.column(33): " + (record.column(33) ?: "null"))
+            log("record.column(34): " + (record.column(34) ?: "null"))
+            log("record.column(35): " + (record.column(35) ?: "null"))
+            log("record.column(36): " + (record.column(36) ?: "null"))
+            log("record.column(37): " + (record.column(37) ?: "null"))
+            log("record.column(38): " + (record.column(38) ?: "null"))
+            log("record.column(39): " + (record.column(39) ?: "null"))
+            log("record.column(40): " + (record.column(40) ?: "null"))
+            log("record.column(41): " + (record.column(41) ?: "null"))
+            log("record.column(42): " + (record.column(42) ?: "null"))
+            log("record.column(43): " + (record.column(43) ?: "null"))
+            log("record.column(44): " + (record.column(24) ?: "null"))
+            log("record.column(45): " + (record.column(45) ?: "null"))
+            log("record.column(46): " + (record.column(46) ?: "null"))
+            log("record.column(47): " + (record.column(47) ?: "null"))
+            log("record.column(48): " + (record.column(48) ?: "null"))
 
             // log("record.terms(): " + record.terms())
             String taxonID = record.id()
             String datasetID = record.value(DwcTerm.datasetID)
 
+            String abstract = record.column(3)
+            log("abstract: " + (abstract ?: "null"))
 
-            String language = record.column(4)
-            log("language: " + (language ?: "nulo"))
+            String annualCycleUnstructured = record.column(4)
+            log("annualCycleUnstructured: " + (annualCycleUnstructured ?: "null"))
 
-            String synonymsUnstructured = record.column(6)
-            log("synonymsUnstructured: " + (synonymsUnstructured ?: "nulo"))
+            String audiencesUnstructured = record.column(5)
+            log("audiencesUnstructured: " + (audiencesUnstructured ?: "null"))
 
-            String fullDescriptionUnstructured = record.column(9)
-            log("fullDescriptionUnstructured: " + (fullDescriptionUnstructured ?: "nulo"))
+            String behaviorUnstructured = record.column(6)
+            log("behaviorUnstructured: " + (behaviorUnstructured ?: "null"))
 
-            String lifeCycleUnstructured = record.column(12)
-            log("lifeCycleUnstructured: " + (lifeCycleUnstructured ?: "nulo"))
+            String briefDescription = record.column(7)
+            log("briefDescription: " + (briefDescription ?: "null"))
 
-            String reproductionUnstructured = record.column(13)
-            log("reproductionUnstructured: " + (reproductionUnstructured ?: "nulo"))
+            String detailUnstructured = record.column(8)
+            log("detailUnstructured: " + (detailUnstructured ?: "null"))   
 
-            String feedingUnstructured = record.column(21)
-            log("feedingUnstructured: " + (feedingUnstructured ?: "nulo"))
+            String directThreatUnstructured = record.column(9)
+            log("directThreatUnstructured: " + (directThreatUnstructured ?: "null"))                        
 
-            String molecularDataUnstructured = record.column(28)
-            log("molecularDataUnstructured: " + (molecularDataUnstructured ?: "nulo"))
+            String dispersalMeans = record.column(10)
+            log("dispersalMeans: " + (dispersalMeans ?: "null"))                        
 
-            String habitatUnstructured = record.column(38)
-            log("habitatUnstructured: " + (habitatUnstructured ?: "nulo"))
+            String dispersalUnstructured = record.column(11)
+            log("dispersalUnstructured: " + (dispersalUnstructured ?: "null"))  
+            
+            String distributionUnstructured = record.column(12)
+            log("distributionUnstructured: " + (distributionUnstructured ?: "null"))  
 
-            String distributionUnstructured = record.column(39)
-            log("distributionUnstructured: " + (distributionUnstructured ?: "nulo"))
+            String ecologicalSignificanceUnstructured = record.column(13)
+            log("ecologicalSignificanceUnstructured: " + (ecologicalSignificanceUnstructured ?: "null"))  
 
-            String populationBiologyUnstructured = record.column(42)
+            String endemicUnstructured = record.column(14)
+            log("endemicUnstructured: " + (endemicUnstructured ?: "null"))  
+
+            String endTimeInterval = record.column(15)
+            log("endTimeInterval: " + (endTimeInterval ?: "null"))  
+
+            String environmentalEnvelopeUnstructured = record.column(16)
+            log("environmentalEnvelopeUnstructured: " + (environmentalEnvelopeUnstructured ?: "null"))  
+
+            String event = record.column(17)
+            log("event: " + (event ?: "null"))
+
+            String feedingType = record.column(18)
+            log("feedingType: " + (feedingType ?: "null"))
+
+            String feedingUnstructured = record.column(19)
+            log("feedingUnstructured: " + (feedingUnstructured ?: "null"))
+
+            String fullDescriptionUnstructured = record.column(20)
+            log("fullDescriptionUnstructured: " + (fullDescriptionUnstructured ?: "null"))            
+
+            String habitatUnstructured = record.column(21)
+            log("habitatUnstructured: " + (habitatUnstructured ?: "null"))
+
+            String impactMechanism = record.column(22)
+            log("impactMechanism: " + (impactMechanism ?: "null"))
+
+            String impactTarget = record.column(23)
+            log("impactTarget: " + (impactTarget ?: "null"))
+
+            String interactionSpeciesType = record.column(24)
+            log("interactionSpeciesType: " + (interactionSpeciesType ?: "null"))
+
+            String interactionUnstructured = record.column(25)
+            log("interactionUnstructured: " + (interactionUnstructured ?: "null"))
+
+            String invasivenessUnstructured = record.column(26)
+            log("invasivenessUnstructured: " + (invasivenessUnstructured ?: "null"))
+
+            String keys = record.column(27)
+            log("keys: " + (keys ?: "null"))
+
+            String language = record.column(28)
+            log("language: " + (language ?: "null"))            
+
+            String legislationUnstructured = record.column(29)
+            log("legislationUnstructured: " + (legislationUnstructured ?: "null"))            
+
+            String lifeCycleUnstructured = record.column(30)
+            log("lifeCycleUnstructured: " + (lifeCycleUnstructured ?: "null"))
+
+            String lifeFormUnstructured = record.column(31)
+            log("lifeFormUnstructured: " + (lifeFormUnstructured ?: "null"))
+
+            String managementAndConservationUnstructured = record.column(32)
+            log("managementAndConservationUnstructured: " + (managementAndConservationUnstructured ?: "null"))
+
+            String migratoryUnstructured = record.column(33)
+            log("migratoryUnstructured: " + (migratoryUnstructured ?: "null"))
+
+            String molecularDataUnstructured = record.column(34)
+            log("molecularDataUnstructured: " + (molecularDataUnstructured ?: "null"))
+
+            String naturalHistoryUnstructured = record.column(35)
+            log("naturalHistoryUnstructured: " + (naturalHistoryUnstructured ?: "null"))
+
+            String populationBiologyUnstructured = record.column(36)
             log("populationBiologyUnstructured: " + (populationBiologyUnstructured ?: "nulo"))
 
-            String usesUnstructured = record.column(46)
-            log("usesUnstructured: " + (usesUnstructured ?: "nulo"))
+            String reproductionUnstructured = record.column(37)
+            log("reproductionUnstructured: " + (reproductionUnstructured ?: "null"))
 
-            String behaviorUnstructured = record.column(25)
-            log("behaviorUnstructured: " + (behaviorUnstructured ?: "nulo"))            
+            String route = record.column(38)
+            log("route: " + (route ?: "null"))
 
-            String endemicUnstructured = record.column(40)
-            log("endemicUnstructured: " + (endemicUnstructured ?: "nulo"))            
+            String startTimeInterval = record.column(39)
+            log("startTimeInterval: " + (startTimeInterval ?: "null"))
+
+            String structureDispersed = record.column(40)
+            log("structureDispersed: " + (structureDispersed ?: "null"))
+
+            String synonymsUnstructured = record.column(41)
+            log("synonymsUnstructured: " + (synonymsUnstructured ?: "null"))
+
+            String territoryUnstructured = record.column(42)
+            log("territoryUnstructured: " + (territoryUnstructured ?: "null"))
 
             String threatStatusUnstructured = record.column(43)
-            log("threatStatusUnstructured: " + (threatStatusUnstructured ?: "nulo"))            
+            log("threatStatusUnstructured: " + (threatStatusUnstructured ?: "null"))            
+
+            String trophicStrategy = record.column(44)
+            log("trophicStrategy: " + (trophicStrategy ?: "null"))
+
+            String trophicStrategyRemarks = record.column(45)
+            log("trophicStrategyRemarks: " + (trophicStrategyRemarks ?: "null"))
+
+            String usesUnstructured = record.column(46)
+            log("usesUnstructured: " + (usesUnstructured ?: "null"))
+
+            String vector = record.column(47)
+            log("vector: " + (vector ?: "null"))
+
+            String whatImpact = record.column(48)
+            log("whatImpact: " + (whatImpact ?: "null"))            
 
 
 
@@ -1567,20 +1699,55 @@ class ImportService implements GrailsConfigurationAware {
             doc["taxonGuid"] = taxonID
             doc["datasetID"] = datasetID
 
-            doc["language"] = language
-            doc["synonymsUnstructured"] = synonymsUnstructured
-            doc["fullDescriptionUnstructured"] = fullDescriptionUnstructured
-            doc["lifeCycleUnstructured"] = lifeCycleUnstructured
-            doc["reproductionUnstructured"] = reproductionUnstructured
-            doc["feedingUnstructured"] = feedingUnstructured
-            doc["molecularDataUnstructured"] = molecularDataUnstructured
-            doc["habitatUnstructured"] = habitatUnstructured
+            doc["abstract"] = abstract
+            doc["annualCycleUnstructured"] = annualCycleUnstructured
+            doc["audiencesUnstructured"] = audiencesUnstructured
+            doc["behaviorUnstructured"] = behaviorUnstructured
+            doc["briefDescription"] = briefDescription
+            doc["detailUnstructured"] = detailUnstructured
+            doc["directThreatUnstructured"] = directThreatUnstructured
+            doc["dispersalMeans"] = dispersalMeans
+            doc["dispersalUnstructured"] = dispersalUnstructured
             doc["distributionUnstructured"] = distributionUnstructured
+            doc["ecologicalSignificanceUnstructured"] = ecologicalSignificanceUnstructured
+            doc["endemicUnstructured"] = endemicUnstructured
+            doc["endTimeInterval"] = endTimeInterval
+            doc["environmentalEnvelopeUnstructured"] = environmentalEnvelopeUnstructured
+            doc["event"] = event
+            doc["feedingType"] = feedingType
+            doc["feedingUnstructured"] = feedingUnstructured
+            doc["fullDescriptionUnstructured"] = fullDescriptionUnstructured
+            doc["habitatUnstructured"] = habitatUnstructured
+            doc["impactMechanism"] = impactMechanism
+            doc["impactTarget"] = impactTarget
+            doc["interactionSpeciesType"] = interactionSpeciesType
+            doc["interactionUnstructured"] = interactionUnstructured
+            doc["invasivenessUnstructured"] = invasivenessUnstructured
+            doc["keys"] = keys
+            doc["language"] = language
+            doc["legislationUnstructured"] = legislationUnstructured
+            doc["lifeCycleUnstructured"] = lifeCycleUnstructured
+            doc["lifeFormUnstructured"] = lifeFormUnstructured
+            doc["managementAndConservationUnstructured"] = managementAndConservationUnstructured
+            doc["migratoryUnstructured"] = migratoryUnstructured
+            doc["molecularDataUnstructured"] = molecularDataUnstructured
+            doc["naturalHistoryUnstructured"] = naturalHistoryUnstructured
             doc["populationBiologyUnstructured"] = populationBiologyUnstructured
+            doc["reproductionUnstructured"] = reproductionUnstructured
+            doc["route"] = route
+            doc["startTimeInterval"] = startTimeInterval
+            doc["structureDispersed"] = structureDispersed
+            doc["synonymsUnstructured"] = synonymsUnstructured
+            doc["territoryUnstructured"] = territoryUnstructured
+            doc["threatStatusUnstructured"] = threatStatusUnstructured
+            doc["trophicStrategy"] = trophicStrategy
+            doc["trophicStrategyRemarks"] = trophicStrategyRemarks
             doc["usesUnstructured"] = usesUnstructured
-            doc["behaviorUnstructured"] = behaviorUnstructured 
-            doc["endemicUnstructured"] = endemicUnstructured            
-            doc["threatStatusUnstructured"] = threatStatusUnstructured               
+            doc["vector"] = vector
+            doc["whatImpact"] = whatImpact
+            
+            
+
 
             def attribution = findAttribution(datasetID, attributionMap, datasetMap)
             if (attribution) {
